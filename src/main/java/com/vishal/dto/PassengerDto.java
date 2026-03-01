@@ -13,7 +13,7 @@ public class PassengerDto {
 
     private String id;
     private String email;
-    private String password;
+    private String password; // encrypted password
     private String name;
     private String phoneNumber;
 

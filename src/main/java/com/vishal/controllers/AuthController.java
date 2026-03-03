@@ -7,10 +7,7 @@ import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -27,6 +24,13 @@ public class AuthController {
         PassengerDto passengerDto = authService.signUpPassenger(signupRequestDto);
 
         return new ResponseEntity<>(passengerDto,HttpStatus.CREATED) ;
+    }
+
+    @GetMapping("/signin/passenger")
+    public ResponseEntity<String> signIn() {
+
+
+        return new ResponseEntity<>("10",HttpStatus.CREATED) ;
     }
 
 }

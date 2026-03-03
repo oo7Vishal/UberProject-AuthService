@@ -12,7 +12,7 @@ import java.util.Date;
 @Builder
 public class PassengerDto {
 
-    private String id;
+    private Long id;
     private String email;
     private String password; // encrypted password
     private String name;
@@ -22,8 +22,8 @@ public class PassengerDto {
 
     public static PassengerDto from(Passenger p) {
         PassengerDto result = PassengerDto.builder()
-                //.id(p.getId())
-               // .createdAt(p.getCreatedAt())
+                .id(p.getId())
+                .createdAt(p.getCreatedAt())
                 .email(p.getEmail())
                 .name(p.getName())
                 .password(p.getPassword())

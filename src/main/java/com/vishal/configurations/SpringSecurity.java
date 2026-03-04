@@ -1,9 +1,15 @@
 package com.vishal.configurations;
 
+import com.vishal.services.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -17,41 +23,41 @@ public class SpringSecurity {
     }
 
     @Bean
+    public UserDetailsService userDetailsService() {
+        return new UserDetailsServiceImpl();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
+
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService());
+        provider.setPasswordEncoder(bCryptPasswordEncoder());
+        return provider;
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
         http
-                // Disable CSRF for development (enable it in production!)
                 .csrf(csrf -> csrf.disable())
+                // safe for APIs
+                .cors(cors -> cors.disable() )
 
-                // Define authorization rules
                 .authorizeHttpRequests(auth -> auth
-                        // Public endpoints - no authentication required
-                        .requestMatchers("/api/v1/auth/signup/*", "/api/auth/login", "/public/**").permitAll()
-
-                        // All other endpoints require authentication
+                        .requestMatchers("/api/v1/auth/**").permitAll()  // all auth endpoints public
+                     //   .requestMatchers("/h2-console/**").permitAll()
                         .anyRequest().authenticated()
-                )
+                );
 
-                // Form login (useful for testing in browser)
-                .formLogin(form -> form
-                        .loginPage("/login")           // custom login page if you have one
-                        .permitAll()
-                        .defaultSuccessUrl("/home", true)
-                )
+                // No form login needed for pure API
+                // .formLogin(...) ← remove completely
 
-                // Logout configuration
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login?logout")
-                        .permitAll()
-                )
+             //   .logout(logout -> logout.permitAll());  // optional
 
-        // Optional: HTTP Basic authentication (good for testing APIs)
-        // .httpBasic(httpBasic -> httpBasic.realmName("Uber Auth Service"))
-
-        // If you later add JWT / stateless auth, disable session creation here
-        // .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        ;
+     //   http.headers(headers -> headers.frameOptions(frame -> frame.disable()));
 
         return http.build();
     }

@@ -26,7 +26,7 @@ public class JwtService implements CommandLineRunner {
 
 
     // Get signing key (secure way – never hardcode secret in code)
-    private SecretKey getSigningKey() {
+    public SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(SECRET.getBytes());
     }
 
@@ -43,6 +43,10 @@ public class JwtService implements CommandLineRunner {
                 .signWith(getSigningKey())
                 .compact();
     }
+
+//    public String generateToken(String email) {
+//        return generateToken(new HashMap<>(),email);
+//    }
 
     // Overloaded: simple token with only username
     public String generateToken(String username) {
@@ -77,7 +81,7 @@ public class JwtService implements CommandLineRunner {
     }
 
     // Internal: parse all claims from token
-    private Claims extractAllClaims(String token) {
+    public Claims extractAllClaims(String token) {
         return Jwts.parser()
                 .setSigningKey(getSigningKey())
                 .build()
